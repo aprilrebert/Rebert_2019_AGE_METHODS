@@ -1,3 +1,3 @@
 # Rebert_2019_AGE_METHODS
 
-A line I wrote on my local computer
+This repository contains the R script for the analyses contained in Rebert et al 2019 submitted Fisheries and Research.
