@@ -1,0 +1,23 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# R projects
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+*.Rdata
+
+# other file types we don't want to track
+*.xlsx
+*.xlsm
+*.docx
+
+# example of a folder you want to ignore
+foldername
+
+# Windows thumbnail cache files
+Thumbs.db
