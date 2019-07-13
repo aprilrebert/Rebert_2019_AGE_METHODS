@@ -197,4 +197,48 @@ et.plot<- ggplot(Shell, aes(x=as.factor(Shell.Condition), y=Endocuticle.Measurem
 
 et.plot
 
+#######################################################################
+# Dion's suggestions
 
+
+########-------------------------------------------########
+######## IB: BAND COUNT, SHELL CONDITION, AND SIZE ########
+########-------------------------------------------########
+
+# Linear Model with Determinator band counts
+mod1<-with(Shell, lm(Final.Band.Count~Shell.Condition + Animal.Size + Shell.Condition:Animal.Size))
+summary(mod1)
+plot(mod1)
+
+mod1<-with(Shell, lm(Final.Band.Count~factor(Shell.Condition) + Animal.Size + factor(Shell.Condition):Animal.Size))
+summary(mod1)
+plot(mod1)
+
+
+# with Reader 1 band counts
+mod1<-with(Shell, lm(Band.Count.Reader.1~Shell.Condition + Animal.Size + Shell.Condition:Animal.Size))
+summary(mod1)
+plot(mod1)
+
+mod1<-with(Shell, lm(Band.Count.Reader.1~factor(Shell.Condition) + Animal.Size + factor(Shell.Condition):Animal.Size))
+summary(mod1)
+plot(mod1)
+
+# with Reader 2 band counts
+mod1<-with(Shell, lm(Band.Count.Reader.2~Shell.Condition + Animal.Size + Shell.Condition:Animal.Size))
+summary(mod1)
+plot(mod1)
+
+mod1<-with(Shell, lm(Band.Count.Reader.2~factor(Shell.Condition) + Animal.Size + factor(Shell.Condition):Animal.Size))
+summary(mod1)
+plot(mod1)
+
+## ENDOCUTICLE THICKNESS AND SHELL CONDITION
+## 
+
+# ANOVA
+mod<-with(Shell, aov(Endocuticle.Measurement~Shell.Condition + Animal.Size + Shell.Condition:Animal.Size))
+anova(mod)
+
+mod<-with(Shell, aov(Endocuticle.Measurement~factor(Shell.Condition) + Animal.Size + factor(Shell.Condition):Animal.Size))
+anova(mod)
