@@ -242,3 +242,15 @@ anova(mod)
 
 mod<-with(Shell, aov(Endocuticle.Measurement~factor(Shell.Condition) + Animal.Size + factor(Shell.Condition):Animal.Size))
 anova(mod)
+
+interaction.plot(Shell$Shell.Condition, Shell$Final.Band.Count, Shell$Animal.Size, fun = mean, type = "b", col = c("black", "red", "green"), pch = c(19,17,15), fixed = TRUE)
+boxplot(Animal.Size~Shell.Condition, data=Shell)
+mod<-with(Shell, aov(Animal.Size~factor(Shell.Condition)))
+anova(mod)
+summary(mod)
+
+mod<-with(Shell, aov(Animal.Size~Final.Band.Count))
+anova(mod)
+summary(mod)
+
+
