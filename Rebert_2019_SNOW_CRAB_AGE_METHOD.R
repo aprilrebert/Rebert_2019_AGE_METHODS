@@ -196,8 +196,29 @@ et.plot<- ggplot(Shell, aes(x=as.factor(Shell.Condition), y=Endocuticle.Measurem
                             "4" = "Very Old"))+
   labs(x="Shell Condition", y="Endocuticle Thickness (mm)") 
 
-et.plot<- ggplot(Shell, aes(x=as.factor(Shell.Condition), y=Final.Band.Count, size=15))+
-  geom_point(colour = "black", size = 2, show.legend = FALSE, position = "jitter")+
+et.plot
+
+
+########-------------------------------------------########
+######## IB: BAND COUNT, SHELL CONDITION, AND SIZE ########
+########-------------------------------------------########
+
+# EDA
+
+hist(Shell$Final.Band.Count)
+# approximately normal
+
+shapiro.test(Shell$Final.Band.Count)
+# Shapiro-Wilks test results suggest normality
+
+# These plot show no relationship... no model necessary. we collected size to confirm terminal molt
+
+plot((jitter(Shell$Final.Band.Count))~factor(Shell$Shell.Condition))
+plot(jitter(Shell$Final.Band.Count)~Shell$Animal.Size)
+
+scatter.size<- ggplot(Shell, aes(x=as.factor(Shell.Condition), y=Final.Band.Count, size=15))+
+  geom_point(colour = "black", size = 2, fill = NA, show.legend = FALSE)+
+  geom_jitter(width=0.1, height=0.1)+
   guides(fill=FALSE)+
   theme(axis.line = element_line(colour = "black"),
         text = element_text(size=16, family="Times"),
@@ -212,31 +233,15 @@ et.plot<- ggplot(Shell, aes(x=as.factor(Shell.Condition), y=Final.Band.Count, si
                             "4" = "Very Old"))+
   labs(x="Shell Condition", y="Endocuticle Thickness (mm)") 
 
-et.plot
+scatter.size
 
-#######################################################################
-# Dion's suggestions
-
-
-########-------------------------------------------########
-######## IB: BAND COUNT, SHELL CONDITION, AND SIZE ########
-########-------------------------------------------########
-
-# Linear Model with Determinator band counts
-mod1<-with(Shell, lm(Final.Band.Count~Shell.Condition + Animal.Size + Shell.Condition:Animal.Size))
+# Linear Model with Determinator band counts, includes size?
+mod1<-with(Shell, lm(Final.Band.Count~Shell.Condition + Shell.Condition*Animal.Size))
 summary(mod1)
 plot(mod1)
 
-hist(Shell$Final.Band.Count)
-# add these plots. there is no relationship and we don't need a model to tell us that. we collected size to confirm terminal molt
-# "you're approximately normal"
-plot((jitter(Shell$Final.Band.Count))~factor(Shell$Shell.Condition))
-plot(jitter(Shell$Final.Band.Count)~Shell$Animal.Size)
+# Or 
 
-shapiro.test(Shell$Final.Band.Count)
-# passes
-
-library("MASS")
 mod1<-with(Shell, lm(Final.Band.Count~Shell.Condition))
 summary(mod1)
 plot(mod1)
