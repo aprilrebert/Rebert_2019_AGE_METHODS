@@ -22,6 +22,7 @@ rm(list=ls(all=T))
 # LOAD LIBRARIES
 library(FSA)
 library(ggplot2)
+library(MASS)
 
 windowsFonts("Times"=windowsFont("TT Times New Roman"))
 
@@ -195,6 +196,22 @@ et.plot<- ggplot(Shell, aes(x=as.factor(Shell.Condition), y=Endocuticle.Measurem
                             "4" = "Very Old"))+
   labs(x="Shell Condition", y="Endocuticle Thickness (mm)") 
 
+et.plot<- ggplot(Shell, aes(x=as.factor(Shell.Condition), y=Final.Band.Count, size=15))+
+  geom_point(colour = "black", size = 2, show.legend = FALSE, position = "jitter")+
+  guides(fill=FALSE)+
+  theme(axis.line = element_line(colour = "black"),
+        text = element_text(size=16, family="Times"),
+        axis.text.x = element_text(colour="black"),
+        axis.text.y = element_text(colour="black"),
+        plot.title = element_text(hjust=0.5),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank())+
+  scale_x_discrete(labels=c("2" = "New", "3" = "Old",
+                            "4" = "Very Old"))+
+  labs(x="Shell Condition", y="Endocuticle Thickness (mm)") 
+
 et.plot
 
 #######################################################################
@@ -209,6 +226,23 @@ et.plot
 mod1<-with(Shell, lm(Final.Band.Count~Shell.Condition + Animal.Size + Shell.Condition:Animal.Size))
 summary(mod1)
 plot(mod1)
+
+hist(Shell$Final.Band.Count)
+# add these plots. there is no relationship and we don't need a model to tell us that. we collected size to confirm terminal molt
+# "you're approximately normal"
+plot((jitter(Shell$Final.Band.Count))~factor(Shell$Shell.Condition))
+plot(jitter(Shell$Final.Band.Count)~Shell$Animal.Size)
+
+shapiro.test(Shell$Final.Band.Count)
+# passes
+
+library("MASS")
+mod1<-with(Shell, lm(Final.Band.Count~Shell.Condition))
+summary(mod1)
+plot(mod1)
+
+mod1<- glm(Final.Band.Count~Shell.Condition * Animal.Size, data= Shell, family = "poisson")
+summary(mod1)
 
 mod1<-with(Shell, lm(Final.Band.Count~factor(Shell.Condition) + Animal.Size + factor(Shell.Condition):Animal.Size))
 summary(mod1)
