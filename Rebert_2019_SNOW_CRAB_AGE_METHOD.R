@@ -283,9 +283,13 @@ scatter.size<- ggplot(Shell, aes(x=as.factor(Shell.Condition), y=Animal.Size), s
 
 scatter.size
 
+
+labels <- c("2" = "New", "3" = "Old", "4" = "Very Old")
+win.graph()
+
 scatter.size<- ggplot(Shell, aes(x=Animal.Size, y=Final.Band.Count), shape=1, size=4) +
   geom_point()+
-  facet_wrap(~Shell.Condition)
+  facet_wrap(~Shell.Condition, labeller = labeller(Shell.Condition = labels))+
   guides(fill=FALSE)+
   theme(axis.line = element_line(colour = "black"),
         text = element_text(size=16, family="Times"),
@@ -296,8 +300,6 @@ scatter.size<- ggplot(Shell, aes(x=Animal.Size, y=Final.Band.Count), shape=1, si
         panel.grid.minor = element_blank(),
         panel.border = element_blank(),
         panel.background = element_blank())+
-  scale_x_discrete(labels=c("2" = "New", "3" = "Old",
-                            "4" = "Very Old"))+
   labs(x="Animal Size", y="Band Count") 
 
 scatter.size
