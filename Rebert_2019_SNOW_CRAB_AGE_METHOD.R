@@ -29,7 +29,7 @@ windowsFonts("Times"=windowsFont("TT Times New Roman"))
 
 ## LOAD DATA "SHELL_CONDITION_AND_ENDOCUTICLE_MEASUREMENTS.csv"
 
-Shell <- read.csv(file=file.choose())
+Shell <- read.csv(here::here("SHELL_CONDITION_AND_ENDOCUTICLE_MEASUREMENTS.csv"))
 Shell <- na.omit(Shell)
 names(Shell) = make.names(names(Shell),unique = TRUE)
 
@@ -285,7 +285,7 @@ scatter.size
 
 
 labels <- c("2" = "New", "3" = "Old", "4" = "Very Old")
-win.graph()
+
 
 scatter.size<- ggplot(Shell, aes(x=Animal.Size, y=Final.Band.Count), shape=1, size=4) +
   geom_point()+

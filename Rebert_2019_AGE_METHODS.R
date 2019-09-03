@@ -261,7 +261,7 @@ windowsFonts("Times"=windowsFont("TT Times New Roman"))
 Quality <- read.csv(file=file.choose(), header=T, na.strings="")
   names(Quality)
 
-# EXCLUDE ORIENTATION TRAIL THIN SECTIONS
+# EXCLUDE ORIENTATION TRIAL THIN SECTIONS
 
 Quality <- subset(Quality, Orientation.Method =="published")
 
@@ -354,8 +354,8 @@ chisq.test(tbl, simulate.p.value=TRUE)
     
 # AMONG PAIRED (LEFT & RIGHT) STRUCTURES
 Shrimp.mod<-with(Spot.Shrimp, lm(Readable~Paired.Structure))
-anova(Snow.mod)
-summary(Snow.mod)
+anova(Shrimp.mod)
+summary(Shrimp.mod)
     
 # CHI-SQUARE TESTS AND RESULTS #
     
@@ -366,6 +366,73 @@ tbl<-table(Spot.Shrimp$Readable, Spot.Shrimp$Paired.Structure)
     # PROPORTIONS OF READABLE SECTIONS DO NOT SIGNIFICANTLY DIFFER... 
     # AMONG LEFT AND RIGHT PAIRED EYESTALKS.
     # COMBINE LEFT AND RIGHT PAIRED STRUCTURES MOVING FORWARD.
+    
+    
+    #********** SHRIMP LOCATION WITHIN EYESTALK **********#
+    
+    Eye <- subset(Spot.Shrimp, Structure=="eyestalk")
+    
+    # FOR MODEL COMPARISON, FIT BASIC GAM MODELS VIA 'gamm'
+    
+    mod1<-gamm(Readable~s(Thin.Section.Location,k=4), family=binomial, data=Eye)
+    
+    mod2<-gamm(Readable~s(Thin.Section.Location, by=Animal.ID), family=binomial, data=Eye, niterPQL=100)
+    # NOTE: WILL NOT CONVERGE
+    
+    mod3<-gamm(Readable~s(Thin.Section.Location,k=4, by=Length), family=binomial, data=Eye)
+    
+    mod4<-gamm(Readable~s(Thin.Section.Location,k=4), family=binomial, random = list(Animal.ID = ~ 1), data=Eye)
+    
+    mod5<-gamm(Readable~s(Thin.Section.Location,k=4)+ Length, family=binomial, data=Eye)
+    # FIXED EFFECT FOR LENGTH
+    
+    mod6<-gamm(Readable~s(Thin.Section.Location,k=4, by=Animal.ID), family=binomial, random = list(Animal.ID = ~ 1), data=Eye)
+    # NOTE: WILL NOT CONVERGE
+    
+    mod7<-gamm(Readable~s(Thin.Section.Location,k=4, by=Length) + Length, family=binomial,  data=Eye)
+    
+    # MODEL COMPARISONS (Table 2 - Red King Crab):
+    AIC(mod1$lme, mod3$lme, mod4$lme, mod5$lme, mod7$lme)
+    
+    # AIC SUGGESTS THE SIMPLEST MODEL (COMBINE SMALL AND LARGE SIZE CLASSES)
+    # USE THE MODEL SUGGESTED BY AIC AND FIT AS GAM 
+    
+    mod1<-gam(Readable~s(Thin.Section.Location,k=4), family=binomial, data=Eye)
+    summary(mod1) 
+    
+    # MODEL INSIGNIFICANT
+    
+    Shrimp1<-with(Eye, data.frame(Thin.Section.Location))
+    Shrimp1$P<- predict(mod1, newdata=Shrimp1, type="response")
+    
+    Shrimp2<-with(Shrimp1, data.frame(Thin.Section.Location=rep(seq(from=0.00000000, to=1.00000000, length.out=290))))
+    
+    Shrimp3<-cbind(Shrimp2, predict(mod1, newdata=Shrimp2, type="link", se=TRUE))
+    plot(Shrimp2)
+    Shrimp2<-within(Shrimp3, 
+                  { PredictedProb<-plogis(fit) 
+                  LL<- plogis(fit-1.96*se.fit) 
+                  UL<-plogis(fit+(1.96*se.fit))})
+    
+    ggplot(Shrimp2, aes(x=Thin.Section.Location, y=PredictedProb))+ 
+      scale_y_continuous(labels = scales::percent_format(suffix = "", accuracy = 10 ))+
+      scale_x_continuous(labels = scales::percent_format(suffix = ""), limits = c(0, 1.05))+
+      geom_ribbon(aes(ymin=LL, ymax=UL), alpha= 0.2) +
+      geom_line(size=1 )+ 
+      guides(fill=FALSE)+
+      theme(axis.line = element_line(colour = "black"),
+            axis.text.x = element_text(family = "Times", colour="black", size = 20),
+            axis.text.y = element_text(family = "Times", colour="black", size = 20),
+            axis.title.y = element_text( margin = margin(t=0, r=10, b=0, l=0)),
+            axis.title.x = element_text( margin = margin(t=10, r=0, b=0, l=0)),
+            title = element_text( margin = margin(t=0, r=0, b=20, l=0)),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank(),
+            panel.border = element_blank(),  
+            text = element_text(size=20),
+            panel.background = element_blank()) +
+      labs(title="Shrimp Eyestalk", x="Location (%)", y="Readable (%)")
+    #VISUAL MODEL OF READABILTY ACROSS LOCATION WITHIN SHRIMP EYESTALKS
 
     
 #********** RED KING CRAB LOCATION WITHIN ZYGOCARDIAC **********#
@@ -470,7 +537,7 @@ AIC(mod1$lme, mod3$lme, mod4$lme, mod5$lme, mod7$lme)
     
     ########################################################
     ## 
-    ## FIGURES 8 & 9 ----- NEED TO FIX - UPDATE MANUSCRIPT!!
+    ## FIGURES 8 & 9
     ## 
     ######################################################## 
     
